@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog Workspace — Visual Mock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     Design Tokens (mirrors globals.css @theme)
+     ============================================================ */
+  :root {
+    /* Brand (Hunter Green) */
+    --color-brand-950: oklch(18% 0.075 152);
+    --color-brand-900: oklch(22% 0.082 152);
+    --color-brand-800: oklch(28% 0.088 152);
+    --color-brand-700: oklch(35% 0.090 152);
+    --color-brand-600: oklch(43% 0.088 152);
+    --color-brand-500: oklch(52% 0.085 152);
+    --color-brand-200: oklch(88% 0.040 152);
+    --color-brand-100: oklch(94% 0.022 152);
+    --color-brand-50:  oklch(97% 0.012 152);
+
+    /* Surface layers */
+    --color-canvas:  oklch(97% 0.006 90);
+    --color-panel:   oklch(95% 0.008 90);
+    --color-surface: oklch(100% 0 0);
+
+    /* Semantic */
+    --color-primary:            var(--color-brand-800);
+    --color-primary-hover:      var(--color-brand-700);
+    --color-primary-foreground: oklch(99% 0 0);
+    --color-selection-bg:       var(--color-brand-100);
+    --color-selection-fg:       var(--color-brand-800);
+    --color-background:         var(--color-canvas);
+    --color-foreground:         oklch(15% 0.010 90);
+    --color-muted:              var(--color-panel);
+    --color-muted-foreground:   oklch(50% 0.010 90);
+    --color-border:             oklch(88% 0.008 90);
+    --color-border-subtle:      oklch(92% 0.006 90);
+    --color-ring:               var(--color-brand-800);
+    --color-card:               var(--color-surface);
+    --color-destructive:        oklch(50% 0.200 25);
+    --color-info:               oklch(58% 0.130 240);
+    --color-success:            var(--color-brand-700);
+    --color-warning:            oklch(72% 0.170 75);
+
+    /* Typography */
+    --font-sans:   ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-editor: "Noto Serif JP", "Hiragino Mincho ProN", Georgia, serif;
+    --font-mono:   ui-monospace, "SF Mono", Menlo, monospace;
+
+    /* Border radius */
+    --radius:    0.25rem;
+    --radius-sm: 0.125rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 1rem;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.05);
+    --shadow:    0 1px 3px oklch(0% 0 0 / 0.08), 0 1px 2px oklch(0% 0 0 / 0.05);
+  }
+
+  /* ============================================================
+     Reset & Base
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    color: var(--color-foreground);
+    background: var(--color-canvas);
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ============================================================
+     Global Header
+     ============================================================ */
+  .header {
+    height: 48px;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    gap: 1rem;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .header-logo {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .header-logo-icon {
+    width: 20px;
+    height: 20px;
+    background: var(--color-primary);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary-foreground);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .header-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--color-border);
+  }
+
+  .header-article-title {
+    font-size: 0.875rem;
+    color: var(--color-foreground);
+    font-weight: 500;
+  }
+
+  .header-spacer { flex: 1; }
+
+  .header-status {
+    font-size: 0.75rem;
+    color: var(--color-muted-foreground);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* ============================================================
+     Buttons
+     ============================================================ */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    white-space: nowrap;
+    line-height: 1;
+  }
+
+  .btn-primary {
+    background: var(--color-primary);
+    color: var(--color-primary-foreground);
+    border-color: var(--color-primary);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--color-foreground);
+    border-color: var(--color-border);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--color-muted-foreground);
+    border-color: transparent;
+  }
+
+  .btn-icon {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    justify-content: center;
+    border-radius: var(--radius);
+  }
+
+  /* ============================================================
+     Workspace Layout
+     ============================================================ */
+  .workspace {
+    flex: 1;
+    display: flex;
+    gap: 0;
+    overflow: hidden;
+  }
+
+  /* Pane base */
+  .pane {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-right: 1px solid var(--color-border);
+  }
+
+  .pane:last-child { border-right: none; }
+
+  .pane-header {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding: 0 0.75rem;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--color-border-subtle);
+    flex-shrink: 0;
+  }
+
+  .pane-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-muted-foreground);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .pane-header-spacer { flex: 1; }
+
+  .pane-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* ============================================================
+     Pane 1 — Article List
+     ============================================================ */
+  .pane-1 {
+    width: 200px;
+    flex-shrink: 0;
+    background: var(--color-panel);
+  }
+
+  .article-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius);
+    margin: 0.125rem 0.375rem;
+    cursor: pointer;
+  }
+
+  .article-item:hover {
+    background: var(--color-border-subtle);
+  }
+
+  .article-item.selected {
+    background: var(--color-selection-bg);
+  }
+
+  .article-item-title {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+  }
+
+  .article-item.selected .article-item-title {
+    color: var(--color-selection-fg);
+  }
+
+  .article-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .article-item-date {
+    font-size: 0.6875rem;
+    color: var(--color-muted-foreground);
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.0625rem 0.375rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+  }
+
+  .badge-secondary {
+    background: var(--color-muted);
+    color: var(--color-muted-foreground);
+    border-color: var(--color-border);
+  }
+
+  .badge-warning {
+    background: oklch(96% 0.050 75);
+    color: oklch(35% 0.120 75);
+    border-color: oklch(88% 0.090 75);
+  }
+
+  .badge-success {
+    background: var(--color-selection-bg);
+    color: var(--color-success);
+    border-color: var(--color-brand-200);
+  }
+
+  .pane-section-label {
+    padding: 0.75rem 0.75rem 0.25rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--color-muted-foreground);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* ============================================================
+     Pane 2 — Headings (TOC)
+     ============================================================ */
+  .pane-2 {
+    width: 200px;
+    flex-shrink: 0;
+    background: var(--color-panel);
+  }
+
+  .heading-item {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.3125rem 0.75rem;
+    border-radius: var(--radius);
+    margin: 0.0625rem 0.375rem;
+    cursor: pointer;
+  }
+
+  .heading-item:hover {
+    background: var(--color-border-subtle);
+  }
+
+  .heading-item.active {
+    background: var(--color-selection-bg);
+  }
+
+  .heading-level {
+    font-size: 0.625rem;
+    font-weight: 700;
+    color: var(--color-muted-foreground);
+    min-width: 1.25rem;
+    font-family: var(--font-mono);
+  }
+
+  .heading-item.active .heading-level {
+    color: var(--color-selection-fg);
+  }
+
+  .heading-text {
+    font-size: 0.8125rem;
+    color: var(--color-foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+  }
+
+  .heading-item.active .heading-text {
+    color: var(--color-selection-fg);
+    font-weight: 500;
+  }
+
+  .heading-item[data-level="h2"] { padding-left: 1.25rem; }
+  .heading-item[data-level="h3"] { padding-left: 2rem; }
+
+  /* Source upload area (pane 2 footer) */
+  .pane-footer {
+    border-top: 1px solid var(--color-border-subtle);
+    padding: 0.625rem 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .source-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .source-item {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.375rem;
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+
+  .source-icon {
+    font-size: 0.75rem;
+    width: 16px;
+    text-align: center;
+  }
+
+  .source-name {
+    font-size: 0.6875rem;
+    color: var(--color-muted-foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+  }
+
+  /* ============================================================
+     Pane 3 — Editor (main)
+     ============================================================ */
+  .pane-3 {
+    flex: 1;
+    background: var(--color-surface);
+  }
+
+  .editor-toolbar {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding: 0 0.75rem;
+    gap: 0.25rem;
+    border-bottom: 1px solid var(--color-border-subtle);
+    flex-shrink: 0;
+  }
+
+  .toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+  }
+
+  .toolbar-divider {
+    width: 1px;
+    height: 16px;
+    background: var(--color-border);
+    margin: 0 0.25rem;
+  }
+
+  .toolbar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: var(--radius);
+    border: none;
+    background: transparent;
+    color: var(--color-muted-foreground);
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    font-family: var(--font-sans);
+  }
+
+  .toolbar-btn.active {
+    background: var(--color-selection-bg);
+    color: var(--color-selection-fg);
+  }
+
+  .toolbar-btn-text {
+    font-size: 0.6875rem;
+    font-weight: 700;
+  }
+
+  .editor-content {
+    max-width: 42rem;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    font-family: var(--font-editor);
+  }
+
+  .editor-content h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+    color: var(--color-foreground);
+    font-family: var(--font-editor);
+  }
+
+  .editor-content h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.35;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-foreground);
+    font-family: var(--font-editor);
+  }
+
+  .editor-content h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-top: 1.5rem;
+    margin-bottom: 0.375rem;
+    color: var(--color-foreground);
+    font-family: var(--font-editor);
+  }
+
+  .editor-content p {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--color-foreground);
+    margin-bottom: 1rem;
+    font-family: var(--font-editor);
+  }
+
+  .editor-content .selection-highlight {
+    background: oklch(93% 0.025 152 / 0.4);
+    border-radius: 2px;
+  }
+
+  .editor-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    background: var(--color-primary);
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  /* ============================================================
+     Pane 4 — Images
+     ============================================================ */
+  .pane-4 {
+    width: 196px;
+    flex-shrink: 0;
+    background: var(--color-panel);
+  }
+
+  .image-section-label {
+    padding: 0.625rem 0.75rem 0.25rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--color-muted-foreground);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .eyecatch-area {
+    margin: 0.25rem 0.75rem 0.75rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+    background: var(--color-canvas);
+  }
+
+  .eyecatch-image {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: linear-gradient(
+      135deg,
+      oklch(88% 0.040 152),
+      oklch(94% 0.022 152)
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: var(--color-brand-600);
+    font-weight: 500;
+  }
+
+  .eyecatch-actions {
+    display: flex;
+    gap: 0.375rem;
+    padding: 0.5rem 0.5rem;
+  }
+
+  .section-images {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    padding: 0 0.75rem;
+  }
+
+  .section-image-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  .section-image-thumb {
+    width: 36px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(
+      135deg,
+      oklch(85% 0.045 152),
+      oklch(92% 0.025 152)
+    );
+    flex-shrink: 0;
+  }
+
+  .section-image-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .section-image-label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--color-foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .section-image-size {
+    font-size: 0.625rem;
+    color: var(--color-muted-foreground);
+  }
+
+  .ai-generate-area {
+    margin: 0.75rem 0.75rem 0;
+    padding: 0.625rem;
+    border-radius: var(--radius-md);
+    border: 1px dashed var(--color-border);
+    background: var(--color-canvas);
+  }
+
+  .ai-generate-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--color-muted-foreground);
+    margin-bottom: 0.375rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .ai-prompt-input {
+    width: 100%;
+    font-size: 0.75rem;
+    font-family: var(--font-sans);
+    color: var(--color-foreground);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 0.3125rem 0.5rem;
+    resize: none;
+    height: 52px;
+    margin-bottom: 0.375rem;
+    outline: none;
+  }
+
+  /* ============================================================
+     Icon helpers (inline SVG via CSS content)
+     ============================================================ */
+  .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* ============================================================
+     Skeleton (AI generating state)
+     ============================================================ */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--color-border) 25%,
+      var(--color-border-subtle) 50%,
+      var(--color-border) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--radius-sm);
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* ============================================================
+     Misc
+     ============================================================ */
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot-draft    { background: oklch(65% 0.010 90); }
+  .dot-review   { background: oklch(72% 0.170 75); }
+  .dot-published { background: var(--color-brand-600); }
+
+  .new-article-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    width: calc(100% - 1.5rem);
+    margin: 0.375rem 0.75rem;
+    padding: 0.375rem 0.5rem;
+    border-radius: var(--radius);
+    border: 1px dashed var(--color-border);
+    background: transparent;
+    color: var(--color-muted-foreground);
+    font-size: 0.75rem;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    justify-content: center;
+  }
+
+  .new-article-btn:hover {
+    background: var(--color-border-subtle);
+    border-style: solid;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     Global Header
+════════════════════════════════════════════════════════════ -->
+<header class="header">
+  <div class="header-logo">
+    <div class="header-logo-icon">B</div>
+    Blog Workspace
+  </div>
+  <div class="header-divider"></div>
+  <span class="header-article-title">AI駆動型教育の未来：ChatGPTが変える学習体験</span>
+  <span class="header-status">
+    <span class="dot dot-draft"></span>
+    自動保存済み 14:23
+  </span>
+  <div class="header-spacer"></div>
+  <div class="header-actions">
+    <button class="btn btn-outline">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      ソースを追加
+    </button>
+    <button class="btn btn-outline">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      保存
+    </button>
+    <button class="btn btn-primary">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      書き出し
+    </button>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════════════
+     4-Pane Workspace
+════════════════════════════════════════════════════════════ -->
+<main class="workspace">
+
+  <!-- ─── Pane 1: Article List ─── -->
+  <div class="pane pane-1">
+    <div class="pane-header">
+      <span class="pane-title">記事</span>
+      <div class="pane-header-spacer"></div>
+      <button class="btn btn-icon btn-ghost" title="新規記事">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+
+    <div class="pane-body" style="padding-top: 0.25rem;">
+      <div class="pane-section-label">下書き</div>
+
+      <!-- Selected article -->
+      <div class="article-item selected">
+        <span class="article-item-title">AI駆動型教育の未来：ChatGPT…</span>
+        <div class="article-item-meta">
+          <span class="badge badge-secondary">下書き</span>
+          <span class="article-item-date">5/14</span>
+        </div>
+      </div>
+
+      <div class="article-item">
+        <span class="article-item-title">生成AI時代のプロンプト設計入門</span>
+        <div class="article-item-meta">
+          <span class="badge badge-warning">レビュー中</span>
+          <span class="article-item-date">5/11</span>
+        </div>
+      </div>
+
+      <div class="article-item">
+        <span class="article-item-title">Notion AIの使い方まとめ</span>
+        <div class="article-item-meta">
+          <span class="badge badge-secondary">下書き</span>
+          <span class="article-item-date">5/8</span>
+        </div>
+      </div>
+
+      <div class="pane-section-label" style="margin-top: 0.5rem;">公開済み</div>
+
+      <div class="article-item">
+        <span class="article-item-title">Claude vs ChatGPT 徹底比較</span>
+        <div class="article-item-meta">
+          <span class="badge badge-success">公開済み</span>
+          <span class="article-item-date">5/1</span>
+        </div>
+      </div>
+
+      <div class="article-item">
+        <span class="article-item-title">RAGアーキテクチャ入門</span>
+        <div class="article-item-meta">
+          <span class="badge badge-success">公開済み</span>
+          <span class="article-item-date">4/22</span>
+        </div>
+      </div>
+
+      <div class="article-item">
+        <span class="article-item-title">ベクトルDBの選び方</span>
+        <div class="article-item-meta">
+          <span class="badge badge-success">公開済み</span>
+          <span class="article-item-date">4/15</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pane-footer" style="padding: 0.5rem 0.375rem;">
+      <button class="new-article-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        新規記事
+      </button>
+    </div>
+  </div>
+
+  <!-- ─── Pane 2: Headings ─── -->
+  <div class="pane pane-2">
+    <div class="pane-header">
+      <span class="pane-title">見出し</span>
+      <div class="pane-header-spacer"></div>
+      <button class="btn btn-icon btn-ghost" title="見出しを追加">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+
+    <div class="pane-body" style="padding-top: 0.375rem;">
+      <div class="heading-item active" data-level="h1">
+        <span class="heading-level">H1</span>
+        <span class="heading-text">AI駆動型教育の未来</span>
+      </div>
+      <div class="heading-item" data-level="h2">
+        <span class="heading-level">H2</span>
+        <span class="heading-text">ChatGPTとは何か</span>
+      </div>
+      <div class="heading-item" data-level="h3">
+        <span class="heading-level">H3</span>
+        <span class="heading-text">仕組みと技術背景</span>
+      </div>
+      <div class="heading-item" data-level="h3">
+        <span class="heading-level">H3</span>
+        <span class="heading-text">教育分野での活用例</span>
+      </div>
+      <div class="heading-item" data-level="h2">
+        <span class="heading-level">H2</span>
+        <span class="heading-text">学習体験の変化</span>
+      </div>
+      <div class="heading-item" data-level="h3">
+        <span class="heading-level">H3</span>
+        <span class="heading-text">個別最適化学習</span>
+      </div>
+      <div class="heading-item" data-level="h3">
+        <span class="heading-level">H3</span>
+        <span class="heading-text">フィードバックの高速化</span>
+      </div>
+      <div class="heading-item" data-level="h2">
+        <span class="heading-level">H2</span>
+        <span class="heading-text">課題とリスク</span>
+      </div>
+      <div class="heading-item" data-level="h2">
+        <span class="heading-level">H2</span>
+        <span class="heading-text">今後の展望</span>
+      </div>
+      <div class="heading-item" data-level="h2">
+        <span class="heading-level">H2</span>
+        <span class="heading-text">まとめ</span>
+      </div>
+    </div>
+
+    <!-- Sources footer -->
+    <div class="pane-footer">
+      <div style="font-size: 0.6875rem; font-weight: 600; color: var(--color-muted-foreground); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.375rem;">ソース素材</div>
+      <div class="source-list">
+        <div class="source-item">
+          <span class="source-icon">📄</span>
+          <span class="source-name">取材メモ.txt</span>
+        </div>
+        <div class="source-item">
+          <span class="source-icon">🔗</span>
+          <span class="source-name">openai.com/blog</span>
+        </div>
+        <div class="source-item">
+          <span class="source-icon">📋</span>
+          <span class="source-name">研究論文.pdf</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Pane 3: Editor ─── -->
+  <div class="pane pane-3">
+    <!-- Tiptap-style toolbar -->
+    <div class="editor-toolbar">
+      <div class="toolbar-group">
+        <button class="toolbar-btn toolbar-btn-text active">B</button>
+        <button class="toolbar-btn toolbar-btn-text" style="font-style:italic">I</button>
+        <button class="toolbar-btn toolbar-btn-text" style="text-decoration:underline">U</button>
+        <button class="toolbar-btn toolbar-btn-text" style="text-decoration:line-through;font-size:0.75rem">S</button>
+      </div>
+      <div class="toolbar-divider"></div>
+      <div class="toolbar-group">
+        <button class="toolbar-btn toolbar-btn-text" style="font-size:0.625rem">H1</button>
+        <button class="toolbar-btn toolbar-btn-text" style="font-size:0.625rem">H2</button>
+        <button class="toolbar-btn toolbar-btn-text" style="font-size:0.625rem">H3</button>
+      </div>
+      <div class="toolbar-divider"></div>
+      <div class="toolbar-group">
+        <button class="toolbar-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </button>
+        <button class="toolbar-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><line x1="4" y1="6" x2="5" y2="6"/><line x1="4" y1="12" x2="5" y2="12"/><line x1="4" y1="18" x2="5" y2="18"/></svg>
+        </button>
+        <button class="toolbar-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+        </button>
+      </div>
+      <div class="toolbar-divider"></div>
+      <div class="toolbar-group">
+        <button class="toolbar-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+        </button>
+      </div>
+      <div class="pane-header-spacer"></div>
+      <div style="font-size: 0.6875rem; color: var(--color-muted-foreground);">
+        1,248 字
+      </div>
+    </div>
+
+    <!-- Editor body -->
+    <div class="pane-body">
+      <div class="editor-content">
+        <h1>AI駆動型教育の未来：ChatGPTが変える学習体験<span class="editor-cursor"></span></h1>
+
+        <p>近年、生成AIの急速な発展は教育分野においても大きな変革をもたらしている。特にOpenAIが開発したChatGPTは、その自然な対話能力と幅広い知識ベースにより、従来の教育ツールとは一線を画す存在として注目を集めている。</p>
+
+        <h2>ChatGPTとは何か</h2>
+
+        <p>ChatGPTは、大規模言語モデル（LLM）を基盤とした対話型AIシステムである。GPT-4アーキテクチャを採用し、人間の言語を理解・生成する能力を持つ。教育場面では、質問への即時回答、個別化された説明、継続的なフィードバックを提供できる点が特に評価されている。</p>
+
+        <h3>仕組みと技術背景</h3>
+
+        <p>トランスフォーマーアーキテクチャと強化学習を組み合わせたRLHF（人間のフィードバックによる強化学習）訓練により、AIは文脈を理解した<span class="selection-highlight">自然で一貫した応答</span>を生成できる。このアプローチが、従来の検索型システムとの根本的な違いを生み出している。</p>
+
+        <h3>教育分野での活用例</h3>
+
+        <p>世界中の教育機関が実験的な導入を進めている。ハーバード大学のCS50コースでは、AIティーチングアシスタントを配置し学生の質問対応を24時間体制で実現した事例が知られている。</p>
+
+        <h2>学習体験の変化</h2>
+
+        <p>AIの導入は単なる効率化にとどまらず、学習体験そのものを質的に変容させている。特に個別最適化と即時フィードバックの領域において、従来手法では実現困難だった水準のサポートが可能になりつつある。</p>
+
+        <h3>個別最適化学習</h3>
+
+        <p>AIは学習者の理解度や進捗状況をリアルタイムで分析し、最適な難易度・提示方法を選択できる。30人のクラスで30通りの学習パスを同時に提供することが現実のものとなりつつある。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Pane 4: Images ─── -->
+  <div class="pane pane-4">
+    <div class="pane-header">
+      <span class="pane-title">画像</span>
+    </div>
+
+    <div class="pane-body">
+      <!-- Eyecatch -->
+      <div class="image-section-label">アイキャッチ</div>
+      <div class="eyecatch-area">
+        <div class="eyecatch-image">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <div class="eyecatch-actions">
+          <button class="btn btn-outline" style="flex:1; justify-content:center; font-size:0.6875rem; padding: 0.25rem 0.375rem;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            アップロード
+          </button>
+          <button class="btn btn-outline" style="flex:1; justify-content:center; font-size:0.6875rem; padding: 0.25rem 0.375rem;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            AI生成
+          </button>
+        </div>
+      </div>
+
+      <!-- Section images -->
+      <div class="image-section-label">セクション口絵</div>
+      <div class="section-images">
+        <div class="section-image-item">
+          <div class="section-image-thumb"></div>
+          <div class="section-image-info">
+            <span class="section-image-label">ChatGPTとは</span>
+            <span class="section-image-size">1200×630</span>
+          </div>
+          <button class="btn btn-icon btn-ghost" style="width:20px;height:20px;flex-shrink:0;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+          </button>
+        </div>
+
+        <div class="section-image-item">
+          <div class="section-image-thumb" style="background: linear-gradient(135deg, oklch(82% 0.055 152), oklch(90% 0.030 152));"></div>
+          <div class="section-image-info">
+            <span class="section-image-label">学習体験の変化</span>
+            <span class="section-image-size">1200×630</span>
+          </div>
+          <button class="btn btn-icon btn-ghost" style="width:20px;height:20px;flex-shrink:0;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+          </button>
+        </div>
+
+        <button class="new-article-btn" style="margin: 0.25rem 0; width: 100%;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          セクションを追加
+        </button>
+      </div>
+
+      <!-- AI generate -->
+      <div class="ai-generate-area">
+        <div class="ai-generate-label">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          AI生成プロンプト
+        </div>
+        <textarea class="ai-prompt-input" placeholder="例：シンプルでモダンな教育をテーマにしたイラスト、ハンターグリーン系"></textarea>
+        <button class="btn btn-outline" style="width:100%; justify-content:center; font-size:0.6875rem; padding: 0.3125rem;">生成する</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+</body>
+</html>
